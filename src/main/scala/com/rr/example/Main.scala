@@ -9,22 +9,15 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-object Greeter {
-  final case class Greet(whom: String, replyTo: ActorRef[Greeted])
-  final case class Greeted(whom: String)
-
-  val initialBehavior: Behaviors.Immutable[Greet] = Behaviors.immutable[Greet] { (_, msg) ⇒
-    println(s"Hello ${msg.whom}!")
-    msg.replyTo ! Greeted(msg.whom)
-    Behaviors.same
-  }
-}
+// Test harness for the Chat actors.
+// The original attached only one client and terminated after that client sent a message
+// This one keeps a mutable count
 
 object Main extends App {
   
   val main: Behavior[NotUsed] =
     Behaviors.setup { ctx ⇒
-      var count = 2
+      var count = 2 // Note mutable state - this is just the  test harness
       val screenName1 = "Screen Name 1"
       val screenName2 = "Screen Name 2"
       val chatRoom = ctx.spawn(ChatRoomActor.initialBehavior, "chatroom")
